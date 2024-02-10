@@ -1,11 +1,11 @@
-import { Link, Outlet } from "react-router-dom";
-import PathConstants from "../routes/pathConstants";
+import { Outlet } from "react-router-dom";
 import { Suspense } from "react";
+import NavigationBar from "../components/NavigationBar";
 
 export default function Layout() {
   return (
     <>
-      <nav><Link to={PathConstants.HOME}>HOME</Link> | <Link to={PathConstants.HOME}>log / register</Link></nav>
+      <NavigationBar />
       <main>
         <Suspense fallback={<div>Loading...</div>}>
           <Outlet />
