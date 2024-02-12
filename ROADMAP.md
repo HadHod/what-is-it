@@ -24,4 +24,3 @@ Product high level roadmap and plan
 
 - [ ] users interactions (comments, ratings, etc.)
 - [ ] payments
-

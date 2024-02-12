@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import './App.scss';
+import './App.css';
 import {
   createBrowserRouter,
   RouterProvider,
