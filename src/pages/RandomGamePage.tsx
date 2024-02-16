@@ -8,14 +8,13 @@ function RandomGamePage(): ReactElement {
 
   function handleCanvasClick(event: React.MouseEvent<Element, MouseEvent>): void {
     const rect: DOMRect | undefined = canvas.current?.getBoundingClientRect();
-    const currentCoord = {
+    drawRect({
       x: event.clientX - (rect?.left || 0),
       y: event.clientY - (rect?.top || 0),
-    };
-    draw(currentCoord);
+    });
   }
 
-  function draw({ x, y }: { x: number, y: number }): void {
+  function drawRect({ x, y }: { x: number, y: number }): void {
     if (context) {
       context.fillStyle = "rgb(200, 0, 0)";
       context.fillRect(x - 25, y - 25, 50, 50);
@@ -23,21 +22,30 @@ function RandomGamePage(): ReactElement {
   }
 
   React.useEffect(() => {
-    function drawImageActualSize(this: HTMLImageElement): void {
+    function drawImageActualSize(image: HTMLImageElement): void {
       if (!canvas.current || !context) {
         return;
       }
 
-      canvas.current.width = this.naturalWidth;
-      canvas.current.height = this.naturalHeight;
-      context.drawImage(this, 0, 0);
+      canvas.current.width = image.naturalWidth;
+      canvas.current.height = image.naturalHeight;
+      context.drawImage(image, 0, 0);
     }
 
-    function loadImage(): void {
-      const image = new window.Image();
-      image.src = "https://konvajs.org/assets/yoda.jpg";
-      image.addEventListener('load', drawImageActualSize);
+    function loadImagePromise(url: string): Promise<HTMLImageElement> {
+      return new Promise(resolve => {
+        const image = new Image();
+        image.addEventListener('load', () => {
+          resolve(image);
+        });
+        image.src = url;
+      });
     }
+
+    const loadImage = async () => {
+      const image = await loadImagePromise("https://konvajs.org/assets/yoda.jpg");
+      drawImageActualSize(image);
+    };
 
     setContext(canvas.current?.getContext('2d'));
 
