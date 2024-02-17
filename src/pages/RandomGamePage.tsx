@@ -4,61 +4,42 @@ import { Spinner } from '../components';
 function RandomGamePage(): ReactElement {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [context, setContext] = useState<CanvasRenderingContext2D | null | undefined>(null);
-  const [imageData, setImageData] = useState<ImageData>();
+  const [imageData, setImageData] = useState<ImageData>({} as ImageData);
 
   const canvas: RefObject<HTMLCanvasElement> = React.useRef<HTMLCanvasElement>(null);
 
   function handleCanvasClick(event: React.MouseEvent<Element, MouseEvent>): void {
     const rect: DOMRect | undefined = canvas.current?.getBoundingClientRect();
-    drawRect({
-      x: event.clientX - (rect?.left || 0),
-      y: event.clientY - (rect?.top || 0),
-    });
-  }
-
-  function drawRect({ x, y }: { x: number, y: number }): void {
-    if (context && imageData) {
-      context.putImageData(imageData, 0, 0, x - 25, y - 25, 50, 50);
-    }
+    const x: number = event.clientX - (rect?.left || 0);
+    const y: number = event.clientY - (rect?.top || 0);
+    const RECT_SIZE: number = 50;
+    context?.putImageData(imageData, 0, 0, x - RECT_SIZE / 2, y - RECT_SIZE / 2, RECT_SIZE, RECT_SIZE);
   }
 
   React.useEffect(() => {
-    setContext(canvas.current?.getContext('2d'));
-
-    function drawImageActualSize(image: HTMLImageElement): void {
-      if (!canvas.current || !context) {
-        return;
+    const prepareCanvas = async () => {
+      function loadImage(url: string): Promise<HTMLImageElement> {
+        return new Promise(resolve => {
+          const image: HTMLImageElement = new Image();
+          image.addEventListener('load', () => resolve(image));
+          image.crossOrigin = "Anonymous";
+          image.src = url;
+        });
       }
 
-      canvas.current.width = image.naturalWidth;
-      canvas.current.height = image.naturalHeight;
-      context.drawImage(image, 0, 0);
-    }
-
-    function loadImagePromise(url: string): Promise<HTMLImageElement> {
-      return new Promise(resolve => {
-        const image = new Image();
-        image.addEventListener('load', () => {
-          resolve(image);
-        });
-        image.src = url;
-        image.crossOrigin = "Anonymous";
-      });
-    }
-
-    const loadImage = async () => {
-      const image = await loadImagePromise("https://konvajs.org/assets/yoda.jpg");
-      drawImageActualSize(image);
-
       if (context && canvas.current) {
+        const image = await loadImage("https://konvajs.org/assets/yoda.jpg");
+        canvas.current.width = image.naturalWidth;
+        canvas.current.height = image.naturalHeight;
+        context.drawImage(image, 0, 0);
         const { width, height } = canvas.current;
         setImageData(context.getImageData(0, 0, width, height));
         context.clearRect(0, 0, width, height);
       }
     };
 
-    loadImage();
-
+    setContext(canvas.current?.getContext('2d'));
+    prepareCanvas();
     setIsLoading(false);
   }, [context]);
 
