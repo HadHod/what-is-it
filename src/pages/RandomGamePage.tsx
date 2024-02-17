@@ -1,4 +1,5 @@
 import React, { ReactElement, RefObject, useState } from 'react';
+import { Spinner } from '../components';
 
 function RandomGamePage(): ReactElement {
   const [context, setContext] = useState<CanvasRenderingContext2D | null | undefined>(null);
@@ -57,7 +58,7 @@ function RandomGamePage(): ReactElement {
   return (
     <div className='flex justify-center items-center h-full'>
       {isLoading
-        ? "Loading..."
+        ? <Spinner />
         : <canvas ref={canvas} className="border border-solid border-black" onClick={handleCanvasClick} />
       }
     </div>

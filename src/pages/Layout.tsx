@@ -1,13 +1,13 @@
 import { Outlet } from "react-router-dom";
 import { Suspense } from "react";
-import NavigationBar from "../components/NavigationBar";
+import { Spinner, NavigationBar } from "../components";
 
 export default function Layout() {
   return (
     <>
       <NavigationBar />
       <main>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Spinner />}>
           <Outlet />
         </Suspense>
       </main>
