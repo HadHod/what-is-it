@@ -1,10 +1,12 @@
 import React, { ReactElement, RefObject, useState } from 'react';
-import { GameProgressBar, Spinner } from '../components';
+import { GameProgressBar, Spinner, SquareSizePanel } from '../components';
+import { DEFAULT_SQUARE_SIZE, SquareSize } from '../components/SquareSizePanel';
 
 function RandomGamePage(): ReactElement {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [context, setContext] = useState<CanvasRenderingContext2D | null | undefined>(null);
   const [imageData, setImageData] = useState<ImageData>({} as ImageData);
+  const [squareSize, setSquareSize] = useState<SquareSize>(DEFAULT_SQUARE_SIZE);
 
   const canvas: RefObject<HTMLCanvasElement> = React.useRef<HTMLCanvasElement>(null);
 
@@ -12,8 +14,7 @@ function RandomGamePage(): ReactElement {
     const rect: DOMRect | undefined = canvas.current?.getBoundingClientRect();
     const x: number = event.clientX - (rect?.left || 0);
     const y: number = event.clientY - (rect?.top || 0);
-    const RECT_SIZE: number = 50;
-    context?.putImageData(imageData, 0, 0, x - RECT_SIZE / 2, y - RECT_SIZE / 2, RECT_SIZE, RECT_SIZE);
+    context?.putImageData(imageData, 0, 0, x - squareSize / 2, y - squareSize / 2, squareSize, squareSize);
   }
 
   React.useEffect(() => {
@@ -50,6 +51,7 @@ function RandomGamePage(): ReactElement {
         : (
           <>
             <canvas ref={canvas} className="border border-solid border-black" onClick={handleCanvasClick} />
+            <SquareSizePanel squareSizeSelected={squareSize} squareSizeSelectedCallback={setSquareSize} />
             <GameProgressBar value={10} />
             <div>
               <input type='text' placeholder='answer' />
