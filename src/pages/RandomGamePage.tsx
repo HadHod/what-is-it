@@ -1,5 +1,5 @@
 import React, { ReactElement, RefObject, useState } from 'react';
-import { Spinner } from '../components';
+import { GameProgressBar, Spinner } from '../components';
 
 function RandomGamePage(): ReactElement {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -50,9 +50,10 @@ function RandomGamePage(): ReactElement {
         : (
           <>
             <canvas ref={canvas} className="border border-solid border-black" onClick={handleCanvasClick} />
+            <GameProgressBar value={10} />
             <div>
               <input type='text' placeholder='answer' />
-              <button>Submit answer</button>
+              <button>Check & Submit</button>
             </div>
           </>
         )
