@@ -20,7 +20,8 @@ function SquareSizePanel({ squareSizeSelected, squareSizeSelectedCallback }: Squ
         return (
           <div
             key={size}
-            className={`w-[${size}px] h-[${size}px] ${getStyles(squareSizeSelected === size)}`}
+            style={{ width: `${size}px`, height: `${size}px` }}
+            className={`${getStyles(squareSizeSelected === size)}`}
             onClick={() => squareSizeSelectedCallback(size)}>
             {size}
           </div>

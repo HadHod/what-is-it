@@ -1,66 +1,41 @@
-import React, { ReactElement, RefObject, useState } from 'react';
-import { GameProgressBar, Spinner, SquareSizePanel } from '../components';
-import { DEFAULT_SQUARE_SIZE, SquareSize } from '../components/SquareSizePanel';
+import React, { ReactElement, useState } from 'react';
+import Game, { GameProps } from '../components/Game';
 
 function RandomGamePage(): ReactElement {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [context, setContext] = useState<CanvasRenderingContext2D | null | undefined>(null);
-  const [imageData, setImageData] = useState<ImageData>({} as ImageData);
-  const [squareSize, setSquareSize] = useState<SquareSize>(DEFAULT_SQUARE_SIZE);
+  const [randomIndex, setRandomIndex] = useState<number>(0);
 
-  const canvas: RefObject<HTMLCanvasElement> = React.useRef<HTMLCanvasElement>(null);
-
-  function handleCanvasClick(event: React.MouseEvent<Element, MouseEvent>): void {
-    const rect: DOMRect | undefined = canvas.current?.getBoundingClientRect();
-    const x: number = event.clientX - (rect?.left || 0);
-    const y: number = event.clientY - (rect?.top || 0);
-    context?.putImageData(imageData, 0, 0, x - squareSize / 2, y - squareSize / 2, squareSize, squareSize);
-  }
+  const games: GameProps[] = [
+    {
+      imageUrl: 'https://konvajs.org/assets/yoda.jpg',
+      hint: 'green master',
+      difficulty: 1,
+      answers: ['yoda'],
+    },
+    {
+      imageUrl: 'https://www.organics.ph/cdn/shop/products/apple-washington-size-113-per-piece-fruits-vegetables-fresh-produce-509590_600x.jpg?v=1601486996',
+      hint: 'tree fruit',
+      difficulty: 1,
+      answers: ['apple', 'apples'],
+    },
+    {
+      imageUrl: 'https://images.freeimages.com/images/large-previews/0bf/missing-link-1195723.jpg?fmt=webp&h=350',
+      hint: 'metal heavy "rope"',
+      difficulty: 2,
+      answers: ['chain'],
+    },
+  ]
 
   React.useEffect(() => {
-    const prepareCanvas = async () => {
-      function loadImage(url: string): Promise<HTMLImageElement> {
-        return new Promise(resolve => {
-          const image: HTMLImageElement = new Image();
-          image.addEventListener('load', () => resolve(image));
-          image.crossOrigin = "Anonymous";
-          image.src = url;
-        });
-      }
-
-      if (context && canvas.current) {
-        const image = await loadImage("https://konvajs.org/assets/yoda.jpg");
-        canvas.current.width = image.naturalWidth;
-        canvas.current.height = image.naturalHeight;
-        context.drawImage(image, 0, 0);
-        const { width, height } = canvas.current;
-        setImageData(context.getImageData(0, 0, width, height));
-        context.clearRect(0, 0, width, height);
-      }
-    };
-
-    setContext(canvas.current?.getContext('2d'));
-    prepareCanvas();
-    setIsLoading(false);
-  }, [context]);
+    setRandomIndex(Math.floor(Math.random() * games.length));
+  }, [games.length]);
 
   return (
-    <div className='flex justify-center items-center flex-col h-full'>
-      {isLoading
-        ? <Spinner />
-        : (
-          <>
-            <canvas ref={canvas} className="border border-solid border-black" onClick={handleCanvasClick} />
-            <SquareSizePanel squareSizeSelected={squareSize} squareSizeSelectedCallback={setSquareSize} />
-            <GameProgressBar value={10} />
-            <div>
-              <input type='text' placeholder='answer' />
-              <button>Check & Submit</button>
-            </div>
-          </>
-        )
-      }
-    </div>
+    <Game
+      imageUrl={games[randomIndex].imageUrl}
+      answers={games[randomIndex].answers}
+      difficulty={games[randomIndex].difficulty}
+      hint={games[randomIndex].hint}
+    />
   );
 }
 
