@@ -1,6 +1,7 @@
 import React, { ReactElement, RefObject, useState } from 'react';
 import SquareSizePanel, { DEFAULT_SQUARE_SIZE, SquareSize } from './SquareSizePanel';
 import { GameProgressBar, Spinner } from '.';
+import DifficultyRating from './DifficultyRating';
 
 export interface GameProps {
   readonly imageUrl: string;
@@ -57,7 +58,7 @@ function Game(props: GameProps): ReactElement {
         ? <Spinner />
         : (
           <>
-            <div>Difficulty: { props.difficulty }</div>
+            <div className='flex'>Difficulty:<DifficultyRating value={props.difficulty} /></div>
             <div>Hint: { props.hint }</div>
             <canvas ref={canvas} className="border border-solid border-black" onClick={handleCanvasClick} />
             <SquareSizePanel squareSizeSelected={squareSize} squareSizeSelectedCallback={setSquareSize} />
