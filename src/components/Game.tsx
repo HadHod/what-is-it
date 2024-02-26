@@ -2,6 +2,7 @@ import React, { ReactElement, RefObject, useState } from 'react';
 import SquareSizePanel, { DEFAULT_SQUARE_SIZE, SquareSize } from './SquareSizePanel';
 import { GameProgressBar, Spinner, Hint } from '.';
 import DifficultyRating from './DifficultyRating';
+import { getProgress } from '../utils/canvas';
 
 export interface GameProps {
   readonly imageUrl: string;
@@ -15,6 +16,7 @@ function Game(props: GameProps): ReactElement {
   const [context, setContext] = useState<CanvasRenderingContext2D | null | undefined>(null);
   const [imageData, setImageData] = useState<ImageData>({} as ImageData);
   const [squareSize, setSquareSize] = useState<SquareSize>(DEFAULT_SQUARE_SIZE);
+  const [progress, setProgress] = useState<number>(0);
 
   const canvas: RefObject<HTMLCanvasElement> = React.useRef<HTMLCanvasElement>(null);
 
@@ -23,6 +25,7 @@ function Game(props: GameProps): ReactElement {
     const x: number = event.clientX - (rect?.left || 0);
     const y: number = event.clientY - (rect?.top || 0);
     context?.putImageData(imageData, 0, 0, x - squareSize / 2, y - squareSize / 2, squareSize, squareSize);
+    setProgress(getProgress(canvas.current!, context!));
   }
 
   React.useEffect(() => {
@@ -62,7 +65,7 @@ function Game(props: GameProps): ReactElement {
             <Hint value={props.hint} />
             <canvas ref={canvas} className="border border-solid border-black" onClick={handleCanvasClick} />
             <SquareSizePanel squareSizeSelected={squareSize} squareSizeSelectedCallback={setSquareSize} />
-            <GameProgressBar value={10} />
+            <GameProgressBar value={progress} />
             <div>
               <input type='text' placeholder='answer' />
               <button>Check & Submit</button>
